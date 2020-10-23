@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <button v-on:click="one();two()">点我</button>
+    </div>
+    <script src="./js/vue.js">
+        var vm = new Vue({
+            el: "#app",
+            data: {
+                msg: "123"
+            },
+            methods: {
+                one() {
+                    console.log("a1")
+                },
+                two() {
+                    console.log("a2")
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>
