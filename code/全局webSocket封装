@@ -1,0 +1,132 @@
+websocket配合vuex实现websocket组件封装，包括心跳重连机制
+
+1、新建一个websocket.js文件
+import store from '../store';
+let wsConnection={
+    $ws:null,
+    lockReconnect:false,//是否连接上
+    timeout:60*1000,
+    timeoutObj:null,
+    timeoutNum:null,
+    serverTimeoutObj:null,
+    sendData:null,//定义需要向后台发送的数据
+    //初始化webSocket,定义webSocket打开、关闭、接收信息、异常函数，入参ws地址
+    initWebSocket:function(){
+        let webSocketBaseUrl='111.207.5.6/wss/';
+        let token=sessionStorage.getItem("jwtHeader")
+        this.$ws=new WebSocket( "ws://" +webSocketBaseUrl +"/webSocket/getDataRecord/" + token)
+        this.$ws.onopen=this.wsOpen();
+        this.$ws.onmessage=this.wsMsg;
+        this.$ws.onclose=this.wsClose;
+        this.$ws.onerror=this.wsError;
+    },
+    //打开webSocket
+    wsOpen:function(e){
+        let _this=this;
+        console.log("websocket已打开",e);
+        //打开时开启心跳检测
+        debugger
+        wsConnection.wsSend(_this.sendData);
+        wsConnection.startWsHeartbeat();
+
+    },
+    wsMsg:function(msg){
+        console.log("获取到 websocket 监控数据:", msg);
+        //每次接收到服务器消息后 重置webSocket心跳
+        wsConnection.resetHeartbeat();
+        if(msg.data){
+           if(msg.data != "连接成功"){
+            //接收到服务器的信息后，存到vuex
+            store.commit('webSocketMsg',msg.data);
+           } 
+        } 
+    },
+    wsClose:function(e){
+        console.log('websocket关闭: ' ,e)
+        wsConnection.reconnect();
+    },
+    wsError:function(e){
+        console.log("websocket发生了错误",e);
+        wsConnection.reconnect();
+    },
+    //需要监听的数据
+    wsSend:function(agentData){
+        let _this=this;
+        console.log("监听的数据",agentData)
+        setTimeout(function(){
+            if(_this.$ws&&_this.$ws.readyState==1){
+                _this.$ws.send(JSON.stringify(agentData))
+            }
+        },3000)
+    },
+    //重启webSocket
+    reconnect:function(){
+        console.log("重新连接")
+        //debugger
+        let _this=this;
+        if(_this.lockReconnect){
+          return;
+        }
+        _this.lockReconnect=true;
+        _this.timeoutNum&&clearTimeout(_this.timeoutNum);
+        _this.timeoutNum=setTimeout(function(){
+          _this.initWebSocket();
+          //_this.wsSend(agentData);
+          _this.lockReconnect=false;
+        },4000)
+    },
+    //心跳检测
+    startWsHeartbeat:function(){
+        let _this=this;
+        _this.timeoutObj&&clearTimeout(_this.timeoutObj);
+        _this.serverTimeoutObj&&clearTimeout(_this.serverTimeoutObj);
+        _this.timeoutObj=setTimeout(function(){
+            if(_this.$ws.readyState!=1){
+                _this.reconnect();
+            }
+        },_this.timeout);
+    },
+    resetHeartbeat:function(){
+        let _this=this;
+        clearTimeout(this.timeoutObj);
+        clearTimeout(_this.serverTimeoutObj);
+        _this.startWsHeartbeat();
+    }
+}
+export default wsConnection
+2、在store.js文件中写入
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  state: {
+    messageData:''
+  },
+  mutations: {
+    webSocketMsg(state,msg){
+      state.messageData=msg;
+    }
+  },
+  actions: {
+
+  }
+})
+3、在使用到的页面上利用computed和watcher监听捕捉message变化
+computed:{
+    message(){
+      debugger
+      return this.$store.state.messageData;
+    }
+  },
+  watch:{
+     //监听
+    message:{
+      handler(){
+        console.log("&&&&&&&&&&")
+        console.log('message**********************',this.message);
+      },
+      deep:true
+    }
+  },
