@@ -1,0 +1,15 @@
+React Component的三个生命周期
+     Mounting：已插入真实的DOM
+     Updating:正在被重新渲染
+     Unmounting：已经移出真实DOM
+针对Component的生命周期状态React响应处理方法：
+      Mounting：
+            componentWillMount();
+            componentDidMount();
+      Updating:
+            compoentWillReceiveProps(object nextProps);已载入原件收到新的参数时呼叫
+            shouldComponentUpdate(object nextProps,object nextState);遇见判断是否重新渲染时调用，其实不会调用除非调用forceUpdate()
+            compoentWillUpdate(object nextprops,object nextState);
+            compoentDidUpdate(object prevProps,object prevState);
+      Unmounting:
+            componentWillUnmount();
