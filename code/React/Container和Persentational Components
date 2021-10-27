@@ -1,0 +1,4 @@
+Persentational Components和Container的区别
+        1、Persentational Components主要负责单纯的UI渲染，从props获得数据资料，从props调用callback function
+        2、Container负责和Redux的store沟通作为Redux和Compnent之间的桥梁
+        
