@@ -13,3 +13,6 @@ React Component的三个生命周期
             compoentDidUpdate(object prevProps,object prevState);
       Unmounting:
             componentWillUnmount();
+   组件在初始化时触发的5个钩子函数：
+       1、getDefaultProps():设置默认的props,也可以使用defaultProps设置组件的默认属性
+                             写法：
