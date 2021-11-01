@@ -14,5 +14,56 @@ React Component的三个生命周期
       Unmounting:
             componentWillUnmount();
    组件在初始化时触发的5个钩子函数：
-       1、getDefaultProps():设置默认的props,也可以使用defaultProps设置组件的默认属性
-                             写法：
+       1、getDefaultProps():默认的props,也可以使用defaultProps设置组件的默认属性，一般用来设置子组件的默认值
+                             写法1(class类组件)：
+                                                 class PublicHeader extends Component{
+                                                  static propTypes = {
+                                                           record: PropTypes.any,
+                                                           title: PropTypes.string.isRequired,
+                                                           confirm: PropTypes.any,
+                                                         }
+                                                 }
+                            
+                              写法2(class类组件)：
+                                                  class PublicHeader extends Component{
+                                                  }
+                                                  PublicHeader.propTypes={
+                                                         record: React.PropTypes.any,
+                                                         title: React.PropTypes.string.isRequired,
+                                                         confirm: React.PropTypes.any,
+                                                  }
+                               写法3(class类组件)：与上面两种写法不同的是使用createReactClass()
+                                                  var PublicHeader=createReactClass({
+                                                       getDefaultProps:function(){
+                                                            return {
+                                                                 record:''
+                                                            }
+                                                       }
+                                                  })
+        2、getInitialState():在使用es6的class语法时没有此钩子函数，同时在constractor中定义this.state,此时可以访问this.props;
+                              写法1(class类组件):
+                                             class Counter React.Component{
+                                                  constructor(props){
+                                                       super(props);
+                                                       this.state={count:props.initialCount};
+                                                  }
+                                             }
+                                写法2(class类组件):
+                                             var Counter=creatReactClass({
+                                               getInitialState:function(){
+                                                 return {count:this.props.initialCount};
+                                               }
+                                             })
+          3、componentWillMount():组件初始化时条用，以后组件更新不调用，整个生命周期只调用一次
+          4、render():创建虚拟dom，进行diff算法，更新dom树
+          5、componentDidMount():组件渲染之后调用，网络请求一般写在此周期内，在此周期内可以获取和修改dom节点（使用this.getDOMNode())，只调用一次
+     组件在更新时触发的钩子函数5个：
+          6、componentWillReceiveProps(nextProps):组件初始化时不调用，接收新的props时调用。
+          7、shouldComponentUpdate(nextProps,nextState):组件再次接收新的state和props，可以在此生命周期中设置前后两个props和state是否相同，如果相同则返回false阻止更新。
+          这里注意react使用的浅对比，也就是对于深层次的结构react会认为它们没有更新。
+                                             
+             
+           
+           
+               
+        
