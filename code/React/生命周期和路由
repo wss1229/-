@@ -61,7 +61,86 @@ React Component的三个生命周期
           6、componentWillReceiveProps(nextProps):组件初始化时不调用，接收新的props时调用。
           7、shouldComponentUpdate(nextProps,nextState):组件再次接收新的state和props，可以在此生命周期中设置前后两个props和state是否相同，如果相同则返回false阻止更新。
           这里注意react使用的浅对比，也就是对于深层次的结构react会认为它们没有更新。
-                                             
+               class CounterButton extends Component {
+                      constructor(props){
+                        super(props);
+                        this.state={count:1};
+                      }
+                      shouldComponentUpdate(nextProps,nextState){
+                        if(this.props.color!=nextProps.color){
+                          return true;
+                        }
+                        if(this.props.count!=nextState){
+                          return true;
+                        }
+                        return false;
+                      }
+                      render(){
+                        return (
+                          <button
+                          color={this.props.color}
+                          onClick={()=>this.setState(state=>({count:state.count+1}))}
+                          >
+                            Count:{this.state.count}
+                          </button>
+                        )
+                      }
+                    }
+               class Counter extends PureComponent {
+                 constructor(props){
+                   super(props);
+                   this.state={count:1};
+                 }
+                 render(){
+                   return (
+                     <button
+                     color={this.props.color}
+                     onClick={()=>this.setState(state=>({count:state.count+1}))}
+                     >
+                       Count:{this.state.count}
+                     </button>
+                   )
+                 }
+               }
+               class WordAdd extends Component {
+                 constructor(props){
+                   super(props);
+                   this.state={
+                     words:['marker']
+                   };
+                   this.handleClick=this.handleClick.bind(this);
+                 }
+                 handleClick(){
+                   // this.setState(state=>({
+                   //   words:state.words.concat(['marker'])
+                   // }))
+                   // this.setState(state=>({
+                   //   words:[...state.words,'marker']
+                   // }))
+
+                 }
+                 render(){
+                   return (
+                     <div>
+                       <button onClick={this.handleClick}></button>
+                       <ListOfWords words={this.state.words} />
+                     </div>
+                   )
+                 }
+               }
+          8、componentWillUpdate(nextProps,nextState):组件初始化时不调用，只有在组件将要更新时才调用
+          9、render()
+          10、componentDidUpdate():组件初始化时不调用，组件更新完成后调用，可以获取dom节点
+          11、componentWillUnmount():组件将要卸载时调用，一些时间的监听和定时器在此时清除
+ React-Router路由
+          Router是React的一个组件，根据匹配的路由地址展现相应的组件。
+          Route对路由地址和组件进行绑定，且Route具有嵌套功能，表示路由地址的包含关系，Route可以向绑定的组件传递的7个属性：
+               children,history,location,params,route,routeParams,routes
+               比较常见的有children(以路由的包涵关系为区分的组件)，location(包括地址，参数，地址切换方式，key值，hash值)
+               <react-router>提供了link标签，这只是对a标签的封装，点击链接后跳转不是a标签的默认方式，点击标签后会先根据url地址的转变，Router监听地址转变
+               然后根据Route的path属性匹配到相应的组件
+          路由的按需加载：解决初次渲染速度慢的问题
+                              Route的component改为getComponent,组件用require.ensure的方式获取，在webpack中配置chunkFilename
              
            
            
