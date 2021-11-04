@@ -1,0 +1,35 @@
+ES6新增对象方法，包含ES5方法：
+                            属性的遍历：1、for...in(遍历可枚举属性)
+                                        2、Object.keys(obj):返回一个数组，包含对象所有可枚举属性的key值
+                                        3、Object.getOwnPropertyNames(obj):返回一个数组，包含所有属性的key值
+                                        4、Object.getOwnPropertySymbols(obj):返回一个数组，包含对象自身的所有 Symbol 属性的键名
+                                        5、Reflect.ownKeys(obj):返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
+                             super关键字：this指向函数所在对象，super指向当前对象的原型对象
+                                           const proto = {
+                                                  x: 'hello',
+                                                  foo() {
+                                                    console.log(this.x);
+                                                  },
+                                                };
+
+                                                const obj = {
+                                                  x: 'world',
+                                                  foo() {
+                                                    super.foo();
+                                                  }
+                                                }
+
+                                                Object.setPrototypeOf(obj, proto);
+
+                                                obj.foo() // "world"
+                              对象的扩展运算符：{...}
+                                                let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+                                                x // 1
+                                                y // 2
+                                                z // { a: 3, b: 4 }
+                                                let { ...z } = null; // 运行时错误
+                                                解构赋值拷贝的是浅拷贝
+                                                let obj = { a: { b: 1 } };
+                                                let { ...x } = obj;
+                                                obj.a.b = 2;
+                                                x.a.b // 2
