@@ -140,7 +140,92 @@ React Component的三个生命周期
                <react-router>提供了link标签，这只是对a标签的封装，点击链接后跳转不是a标签的默认方式，点击标签后会先根据url地址的转变，Router监听地址转变
                然后根据Route的path属性匹配到相应的组件
           路由的按需加载：解决初次渲染速度慢的问题
-                              Route的component改为getComponent,组件用require.ensure的方式获取，在webpack中配置chunkFilename
+                                   React-Router-dom4.0以前：Route的component改为getComponent,组件用require.ensure的方式获取，在webpack中配置chunkFilename
+                                                            const record=(location,cb)=>{
+                                                              require.ensure([],require=>{
+                                                                cb(null,require('@/pages/record/record').default)
+                                                              },'record')
+                                                            };
+                                                            const helpcenter=(location,cb)=>{
+                                                              require.ensure([],require=>{
+                                                                cb(null,require('@/pages/helpcenter/helpcenter').default)
+                                                              },'helpcenter')
+                                                            }
+                                                            const production=(location,cb)=>{
+                                                              require.ensure([],require=>{
+                                                                cb(null,require('@/pages/production/production').default)
+                                                              },'production')
+                                                            }
+                                                            const balance=(location,cb)=>{
+                                                              require.ensure([],require=>{
+                                                                cb(null,require('@/pages/balance/balance').default)
+                                                              },'balance')
+                                                            }
+                                                            const RouteConfig=(
+                                                              <Router history={history}>
+                                                                <Route path='/' getComponent={home}>
+                                                                  <Route path='/record' getComponent={record} />
+                                                                  <Route path='/production' getComponent={production} />
+                                                                  <Route path='balance' getComponent={balance} />
+                                                                </Route>
+                                                              </Router>
+                                                            )
+                                   React-Router-dom4.0以后：使用React.lazy也就是代码拆分
+                                                            const record=lazy(()=>import('@/pages/record/record'));
+                                                            const helpcenter=lazy(()=>import('@/pages/helpcenter/helpcenter'));
+                                                            const production=lazy(()=>import('@/pages/production/production'));
+                                                            const balance=lazy(()=>import('@/pages/balance/balance'));
+                                                            export default class RouteConfig extends Component{
+                                                              render(){
+                                                                return (
+                                                                  <Router>
+                                                                    <Suspense fallback={<div>Loading....</div>}></Suspense>
+                                                                    <Switch>
+                                                                      <Route exact path='/' component={home}></Route>
+                                                                      <Route path='/helpcenter' component={helpcenter}></Route>
+                                                                    </Switch>
+                                                                  </Router>
+                                                                )
+                                                              }
+                                                            }
+             默认路由（IndexRoute）和Index Links：通常一起使用<IndexLink to="/">Home</IndexLink>避免了Home一直处于激活状态
+             React-Router生命周期：
+                    routerWillLeave：拦截正在发生的跳转，在离开route前生效
+                                        const Home=createClass({
+                                          //父组件使用RouteContext，routehi被放到它的子组件和子孙组件的context中
+                                          mixins:[RouteContext],
+                                          render(){
+                                            return (
+                                              <NestedForm />
+                                            )
+                                          }
+                                        })
+                                        const NestedForm=createClass({
+                                          //后代组件使用Lifecycle mixin获得
+                                          mixins:[Lifecycle],
+                                          routerWillLeave(nextLocation){
+                                            if(){
+                                              return 
+                                            }
+                                          }
+                                        })
+               服务端渲染：Serve((req,res)=>{
+                                match({routes,location:req.url},(error,redirectLocation,renderProps)=>{
+                                  if(error){
+                                    //错误时发送一个500响应
+                                    res.send(500,error.message)
+                                  }else if(redirectLocation){
+                                    // 重定向时发送一个30x响应
+                                    res.redirect(302,redirectLocation.pathname+redirectLocation.search)
+                                  }else if(renderProps){
+                                    res.send(200,renderToString(<RoutingContext {...renderProps}></RoutingContext>))
+                                  }else{
+                                    res.send(404,'NotFound')
+                                  }
+                                })
+                             
+                             })
+         
              
            
            
