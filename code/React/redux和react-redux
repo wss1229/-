@@ -1,5 +1,5 @@
 redux基本API:
-            1、Store:createStore(另外一个函数)生成Store对象,store提供的三个方法：
+            1、Store:createStore(另外一个函数)生成Store对象，在实际使用中常常将reducer作为参数传入，这样reducer函数就不需要手动调用了,store提供的三个方法：
                   store.getState(),store.dispatch(),store.subscribe()
                   const sotre=createStore(fn,表示State的最初状态);               
             2、State:Store包含的所有数据。
@@ -62,25 +62,94 @@ react-redux:
           1、connect():从ui组件生成容器组件
                         //TodoList是ui组件，VisibleTodoList是容器组件
                         const VisibleTodoList=connect(mapStateToProps,mapDispatchToProps)(TodoList);
-                        mapStateToProps:将state映射到ui组件的props,mapStateToProps(state对象,props对象)
-                        mapDispatchToProps:将用户对ui组件的操作映射成action,mapDispatchToProps可以是一个函数，也可以是一个对象
-                                            // mapDispatchToProps是一个函数,最终返回一个对象，这个对象定义了ui组件的参数发出怎样的Action
-                                                const mapDispatchToProps=(dispatch,ownProps)=>{
-                                                  return{
-                                                    onClick:()=>{
-                                                      dispatch({
-                                                        type:'',
-                                                        filter:ownProps.filter
-                                                      })
-                                                    }
-                                                  }
-                                                }
-                                                // mapDispatchToProps是一个对象
-                                                const mapDispatchToProps={
-                                                  onClick:(filter)=>{
-                                                    type:'',
-                                                    filter:filter
-                                                  }
-                                                }               
+          2、mapStateToProps:将state映射到ui组件的props,mapStateToProps(state对象,props对象)
+          3、mapDispatchToProps:将用户对ui组件的操作映射成action,mapDispatchToProps可以是一个函数，也可以是一个对象
+                    // mapDispatchToProps是一个函数,最终返回一个对象，这个对象定义了ui组件的参数发出怎样的Action
+                        const mapDispatchToProps=(dispatch,ownProps)=>{
+                          return{
+                            onClick:()=>{
+                              dispatch({
+                                type:'',
+                                filter:ownProps.filter
+                              })
+                            }
+                          }
+                        }
+                        // mapDispatchToProps是一个对象
+                        const mapDispatchToProps={
+                          onClick:(filter)=>{
+                            type:'',
+                            filter:filter
+                          }
+                        } 
+           4、<Provider>组件:让容器组件拿到state对象
+               import {Provider} from 'react-redux';
+               let store=createStore(todoApp);
+               render(
+                    <Provider store={store}>
+                        <App />
+                    </Provider>,
+                    document.getElementById('root')
+               )
+           5、实际应用：
+              import React,{component} from 'react';
+              import PropTypes from 'prop-types';
+              import ReactDOM from 'react-dom';
+              import {createStore} from 'redux';
+              import {Provider,connect} from 'react-redux';
+              //React component
+              class Counter extends Component {
+                render(){
+                    const {value,onIncreaseClick}=this.props;
+                    return (
+                        <div>
+                           <span>{value}</span>
+                           <button onClick={onIncreaseClick}>IncreaseClick</button>
+                        </div>
+                    )
+                }
+              }
+              Counter.propTypes={
+                  value:PropTypes.number.isRequired,
+                  onIncreaseClick:PropTypes.func.isRequired
+              }
+              //Action
+              const increaseAction={type:'increase'};
+              //Reducer
+              function counter(state={count:0},action){
+                  const count=state.count;
+                  switch(action.type){
+                     case:'increase':
+                        return {count:count+1}
+                     default:
+                        return state
+                  }
+              }
+              //Store
+              const store=createStore(counter);
+              //Map Redux state to component props
+              function mspStateToProps(state){
+                        return {
+                           value:state.count
+                        }
+              }
+              //Map Redux actions to component props
+              function mapDispatchToProps(disptach){
+                        return {
+                            onIncreaseClick:()=>dispatch(increaseAction)
+                        }
+              }
+              //Conencted Component
+              const App={
+                  mapStateProps,
+                  mapDispatchToProps
+              }(Counter)
+              
+              ReactDOM.render(
+                 <Provider store={store}>
+                    <APP />
+                 </Provider>,
+                 document.getElementById('root')
+              )
                   
 
