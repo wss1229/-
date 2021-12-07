@@ -30,4 +30,4 @@ vue的响应性原理：
                                  isExtensible(target):拦截Object.isExtensible(proxy),return布尔值
                                  setPrototyprOf(target,proto):拦截Object.setPrototypeOf(proxy,proto),return布尔值
                                  apply(target,object,args):拦截Proxy实例作为函数调用的操作，proxy(...ags)
-                                 construct(traget,object,args):拦截Proxy实例作为构造函数调用的操作，new proxy(...ags)
+                                 construct(traget,object,args):拦截Proxy实例作为构造函数调用的操作，new proxy(...ags),return一个对象不然会报错
