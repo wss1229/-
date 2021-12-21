@@ -1,6 +1,7 @@
 vue的响应性原理：
           1、vue通过creatEffect来跟踪正在运行的函数，让vue知道哪些代码在运行
           2、用proxy跟踪对象property的变化。关于proxy,是es6出现的一种元编程。
+          3、用Reflect代替this绑定；
 什么是proxy:
           proxy可以理解为在目标对象之前架设一层”拦截“，可以对外界的访问进行过滤和改写
           var proxy=new Proxy(target,handler);//target参数表示所要拦截的对象，handler也是一个对象
@@ -31,3 +32,5 @@ vue的响应性原理：
                                  setPrototyprOf(target,proto):拦截Object.setPrototypeOf(proxy,proto),return布尔值
                                  apply(target,object,args):拦截Proxy实例作为函数调用的操作，proxy(...ags)
                                  construct(traget,object,args):拦截Proxy实例作为构造函数调用的操作，new proxy(...ags),return一个对象不然会报错
+            
+什么是Reflect?:
