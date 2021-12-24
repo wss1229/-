@@ -80,14 +80,49 @@
                11、nextTick:更改了一些数据等待DOM更新后立即执行
                12、mergeProps:将包含VNode prop的对各对象合并为一个对象
                13、useCssModule:允许在setup的单文件组件函数中访问css模块
-    4、选项式API：Data,DOM,生命周期钩子，资源组合，杂项
+    4、选项式API：Data,DOM,生命周期钩子，资源，组合，杂项
                 expose:只向外暴露特定的内容，保证组件的封装性，我们现在用ref可以获取到组建的各种属性和内容，为了保证组件的封装性，
                         用expose决定哪些内容可以暴露出去
                 生命周期钩子：注意在mounted周期内不能保证全部的的子组件也被挂在完成，如果希望等待整个视图渲染完毕可以在
-                              此生命周期内使用$nectTick()
+                              此生命周期内使用$nextTick()
                               在Updated周期内同样不会保证所有的子组件被渲染完毕
                  
-                directives:声明一组可用于组件实例中的指令
+                directives:声明一组可用于组件实例中的指令,也可用于自定义指令
+                components:声明一组可以用于组件实例中的组件
+                mixin:是一个选项，接收mixin对象的数组，主要用来创建可以复用的组件逻辑机制，但是vue3中组合式API是更推荐的
+                      共享组件的方式
+                      const mixin={
+                        created(){
+                          console.log(1)
+                        }
+                      }
+                      createApp({
+                        created(){
+                          console.log(2)
+                        },
+                        mixins:[mixin]
+                      })
+                 extends:允许一个组件扩展到另外一个组件，且继承该组件选项
+                 provide/inject：主要为高阶插件、组件库提供用例，不推荐直接用在应用程序代码中。不管嵌套的组件有多深，总能取到祖先资源
+                 setup: 是一个函数，在创建组件实例时，在初始prop解析之后立即调用setup,在 beforeCreated生命周期之前调用，
+                        注意return：
+                                  1、返回值时一个对象，这个值如果在组件模板中用到就要return出来，不然的话没有必要return出来
+                                  2、返回值时一个JSX渲染函数
+                                    export default{
+                                      setup(){
+                                        const count=ref(0);
+                                        const object=reactive({foo:'bar'});
+                                        return ()=>h('div',[count.value,object.foo])
+                                      }
+                                    }
+                          注意参数：
+                                  1、setup(props),通过watchEffect,watch进行观测和响应。不能解构props，解构后的props将失去响应性
+                                  2、setup(props,context),context提供了一个上下文对象，可以对context进行解构，例如setup(props,{emit})
+                                     就是对context.emit进行结构的写法
+     5、实例Property：
+     
+                 
+                
                 
                
                
