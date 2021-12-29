@@ -119,9 +119,36 @@
                                   1、setup(props),通过watchEffect,watch进行观测和响应。不能解构props，解构后的props将失去响应性
                                   2、setup(props,context),context提供了一个上下文对象，可以对context进行解构，例如setup(props,{emit})
                                      就是对context.emit进行结构的写法
-     5、实例Property：
+     5、实例Property：$data $props $el $options $parent $root $slots $refs $attrs
+                      1、$refs:多用于在父组件调用定义在子组件的方法
+                      2、包含了父作用域中不作为组件props或自定义事件的attribute绑定和事件
      
-                 
+     6、实例方法：$watch,$emit,$foreUpdate,$nextTick
+                  1、实例上的data,prop中的data,computed计算结果都可以被监听
+                      this.$watch(
+                        ()=>this.a+this.b,
+                        //当this.a和this.b的值发生改变时，触发监听函数
+                        (newVal,lodVal)=>{
+
+                        }
+                      )
+                      this.$watch返回一个取消监听函数，用来停止触发回调
+                      const unwatch=this.$watch('a',fn);
+                      unwatch();
+                      注意：1、改变数组或者对象中的某一个值时，监听函数不会被触发，因为数组和对象存储的是地址，
+                              如果要深度监听对象和数组内部值的改变需要加deep属性,deep:true,
+                            2、immediate:immediate:true,立即触发监听函数回调
+                   2、$nextTick:与全局方法nextTick不同的是回调的this自动绑定到当前实例组件上
+      7、指令：v-if,v-html,v-text,v-else,v-else-if,v-for,v-on,v-bind,v-model,v-slot,v-pre,v-cloak,v-once,v-memo,v-is
+               注意：1、v-if的优先级高于v-for
+                     2、v-on相当于@：
+                                   .stop:调用event.stopPropagation():阻止捕获和冒泡阶段中当前事件的进一步传播
+扩展：1、冒泡和捕获的区别：
+        事件冒泡和事件捕获是为了解决页面中事件流而提出的概念，分别由微软和网景公司提出。
+        事件冒泡：从内层元素开始发生，一直外层传播
+        事件捕获：从外层元素发生，一直向内层传播
+        element.addEventListener(event,function,useCapture)函数可以让开发者决定事件处理函数在哪一个阶段被调用
+        当useCapture为true时，在捕获阶段执行；当useCapture为false时，在冒泡阶段执行（默认值为false）
                 
                 
                
