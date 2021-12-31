@@ -1,0 +1,29 @@
+1、TypeScript基础类型：Boolean，Number，String,Array,Enum,Any,Unknown,Tuple,Void,Null,Undefined,Never
+              Enum:枚举：
+                        1、数字枚举(初始值从0开始)：enum Direction {
+                                                      NORTH,SOUTH,EAST,WEST
+                                                   }
+                        2、字符串枚举：enum Direction {
+                                          NORTH="NORTH",
+                                          SOUTH="SOUTH",
+                                          EAST="EAST",
+                                          WEST="WEST"
+                                       }  
+                         3、异构枚举(有反向映射)：enum Enum {
+                                        A,B,C="C",D="D",E=8,F
+                                      }
+               any：可以对any类型执行任何操作，没有类型检查
+               Unknown：unknown和any类型一样所有值都能复制给unknown类型，但是只有unknown类型和any类型才能
+                        赋值给unknown类型，且unknown类型不能执行任何操作
+               Tuple:元组，由不同类型的值组成的数组，且使用元组时必须提供每个属性的值
+                     let tupleType:[srting,boolean];
+                     tupleType=["semlinker",true];
+               void:void与any类型相反，它表示没有任何类型，当一个函数没有任何返回值时就用void
+                    function warUser():void{
+                      console.log("This is warning message");
+                    }
+2、TypeScript类型断言:'尖括号'语法，as语法
+                        const someValue:any="this is a string";
+                        const strLength=(<string>someValue).length;
+                        const strLength2=(someValue as string).length;
+3、类型守卫：in关键字，typeof关键字，instanceof关键字,自定义类型保护的类型谓词
