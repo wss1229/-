@@ -1,0 +1,335 @@
+<div id="a">
+    <div id="b">
+        <div id="c"></div>
+    </div>
+</div>
+<script>
+// 创建对象方法： 1、对象字面量
+                    let person={
+                        name:'sanyun',
+                        age:26,
+                        job:'soltWare enginner',
+                        sayName:function(){
+                            console.log(this.name);
+                        }
+                    }
+                    console.log("person.anme",person.name);
+                    person.name="zhangsan";
+                    console.log("person.anme",person.name);
+                    Object.defineProperty(person,"name",{
+                        writable:false,
+                        value:'lisi'
+                    })
+                    console.log("person.name",person.name);
+            //  2、利用Object构造函数
+            //  3、工厂模式
+                    function createPerson(name,age,job){
+                        let o=new Object();
+                        o.name=name;
+                        o.age=age;
+                        o.job=job;
+                        o.sayName=function(){
+
+                            console.log(this.name);
+                        }
+                        return o;
+                    }
+                    let person1=createPerson("Matt",27,"SoftEnginner");
+                    console.log("person1",person1);
+                    person1.sayName();
+            //  4、构造函数模式:构造函数new出来的对象实例的construactor指向这个构造函数本身,constructor用来标识对象类型,不过一般认为
+            //         instanceof操作符是确定对象类型更可靠的方式
+            //         构造函数有普通函数的区别：构造函数也是函数，不过是使用了new操作符
+                    function Person(name,age,job){
+                        this.name=name;
+                        this.age=age;
+                        this.job=job;
+                        this.sayName=function(){
+                            console.log(this.name);
+                        };
+                    }
+                    let person1=new Person("MATT",23,"攻城狮");
+                    let person2=new Person("SAR",40,'收到');
+                    person1.sayName();
+                    console.log("person1",Person.prototype.constructor);//function Person,构造函数上才有prototype
+                    console.log(person1.constructor);//function Person,对象实例上才有constructor
+                    // person1.constructor==Person;//true
+                    // person1 instanceof Person;//true
+                    console.log(person1.sayName==person2.sayName);//false 不同实例上的函数虽然同名但是不相等，参考下方解决方法
+                    let o=new Object();
+                    Person.call(o,"MATT",23,"攻城狮");
+                    console.log("o",o);//使用call之前，原本Person函数里面的this指向了o,所以所有属性和方法多复制给了o
+                    // 解决方法：不同实例上的函数相等,但是这种方法也导致了函数全局作用域污染的问题，为了解决这个问题，参考原型模式
+                        function Equal(){
+                            this.name='相等函数',
+                            this.fnEqual=fnEqual;
+                        }
+                        function fnEqual(){
+                            console.log(this.name);
+                        }
+                        let person3=new Equal();
+                        let person4=new Equal();
+                        console.log(person3.fnEqual==person4.fnEqual);
+            //  5、原型模式：每个函数都会有一个prototype属性，这个属性包含constractor,constractor的值是构造函数本身
+                        function Person(){
+                            Person.prototype.name='Matt';
+                            Person.prototype.age=29;
+                            Person.prototype.job="Software Enginner";
+                            Person.prototype.sayName=function(){
+                                console.log("name",this.name);
+                            }
+                        };
+                        let person1=new Person();
+                        person1.sayName();
+                        let person2=new Person();
+                        person2.sayName();
+                        console.log(person1.sayName==person2.sayName);
+                        console.log(person2.name);//Matt
+                        console.log(person1.job);//29
+// js中对原型的理解：每一个函数在创建的时候都会有一个prototype属性（原型对象）,这个属性里面会自动获得一个constructor的属性，
+//                     指向与之相关联的构造函数
+                    function Person(){
+                        let Person=function(){}
+                    }
+                    console.log(typeof Person.prototype);//Object
+                    console.log(Person.prototype);//Object
+                    let person1=new Person();
+                    // console.log(person1.Prototype)//undefined,
+                    // 因为脚本中没有直接访问这个prototype特性的标准方式，但是浏览器提供了__proto__属性，通过这个属性可以访问到如下
+                    //这句表达式可以使用isPrototypeOf()来确定，相面的表达式相当于Person.prototype.isPrototypeOf(person1);
+                    //获取一个对象实例的原型对象Object.getPrototypeOf(),下面的表达式可以Object.getPrototypeOf(person1)==Person.prototype;
+                    console.log(person1.__proto__==Person.prototype);//true,实例通过__proto__链接到原型构造函数的prototype
+                    console.log(person1.__proto__.constructor==Person);//实例的constructor链接到构造函数本身
+                    console.log(typeof Object);//function
+                    console.log(Person.prototype.__proto__===Object.prototype);//true,构造函数的prototype通过__proto__链接到Object的prototype
+                    console.log(Person.prototype.__proto__.constructor===Object)//true
+                    console.log(Person.prototype.__proto__.__proto__===null);//true
+// js中对原型获取，检测，修改 提出的三种方法：Object.isPrototypeOf();Object.getPrototypeOf();Object.setPrototypeOf(),
+//                                         其中Object.setPrototypeOf()造成的性能浪费是很严重的，为避免这一缺陷，采取Obejct.create()
+                                            let biped={
+                                                numLegs:2
+                                            };
+                                            let person={
+                                                name:'Matt'
+                                            };
+                                            Object.setPrototypeOf(person,biped);
+                                            console.log(person.numLegs);//2
+                                            console.log(biped);
+                                        // 采取Obejct.create()
+                                            let biped={
+                                                numLegs:2
+                                            };
+                                            let person=Object.create(biped);
+                                            console.log(person.name);
+// 原型属性屏蔽：对象实例中添加的一个属性会屏蔽原型对象上的同名属性。但是使用delete操作符可以完全删除这个实例上的属性，从而继续建立原型的连接
+// Object.hasOwnProperty():检测一个属性在实例上还是在原型对象上,而in操作符不管该属性是在实例上还是原型上都会返回true
+                            function Person(){};
+                            Person.prototype.name="Mata";
+                            Person.prototype.age=29;
+                            Person.prototype.job="software Enginner";
+                            Person.prototype.sayName=function(){
+                                console.log(this.name);
+                            }
+                            let person1=new Person();
+                            let person2=new Person();
+                            console.log(person1.hasOwnProperty('name'));//false,该属性在原型对象上
+                            person1.name='newName';
+                            console.log(person1.hasOwnProperty('name'));//true,该属性在实例
+// in和for in:for in会循环实例和原型上的可枚举属性([[Enumerable]]设置为true)
+// Object.keys():返回对象上所有可枚举的实例属性
+
+
+// 对象包含属性和方法：
+//     属性：1、数据属性：包含一个保存数据值的位置
+//               1、属性的特性:
+//                         1-1：[[Configurable]]:表示属性是否可以通过delete删除
+//                         1-2：[[Enumerable]]:表示属性是否可以通过for in循环返回
+//                         1-3：[[Writable]]:表示属性值是否可以被修改
+//                         1-4：[[Value]]:包含属性实际的值
+//                2、同时定义多个属性：Object.defineProperties
+//                3、读取属性的特性:Object.getOwnPropertyDescriptor     
+//         2、访问器属性:访问器属性不包含数据值，包含一个getter函数和一个setter函数
+
+//                         2-1：[[Configurable]]:表示属性是否可以通过delete删除
+//                         2-2：[[Enumerable]]:表示属性是否可以通过for in循环返回
+//                         2-3：[[set]]:设置函数，默认值为undefined
+//                         2-4:[[get]]:获取函数，默认值为undeifined
+//     修改属性的方法：Object.defineProperty(对象,属性名称,描述符)
+// 通常_表示这个对象中的私有属性
+// 合并对象：Object.assgin(目标对象,源对象);返回修改后的目标对象，且目标对象改变
+let book={
+    year_:2017,
+    edition:1
+};
+console.log("book.year",book.year_);
+Object.defineProperty(book,'year',{
+    get(){
+        return this.year_
+
+        
+    },
+    set(newValue){
+        if(newValue>2017){
+            this._year=newValue;
+            this.edition+=newValue-2017;
+        }
+    }
+});
+console.log("book.year",book.year);
+book.year=2018;
+console.log("book.edition",book.edition);
+// 同时定义多个属性
+let book={};
+Object.defineProperties(book,{
+    year_:{
+        value:2017
+    },
+    edition:{
+        value:1
+    },
+    year:{
+        get(){
+            return this.year_;
+        },
+        set(newValue){
+            if(newValue>2017){
+                this._year=newValue;
+                this.edition+=newValue-2017;
+            }
+        }
+    }
+})
+let descriptor=Object.getOwnPropertyDescriptor(book,'year');
+console.log("descriptor.value",descriptor);
+
+Object.assgin
+let dest={
+   name:'dest'
+};
+let src={
+    name:'src'
+};
+let result=Object.assign(dest,src);
+dest.name='新dest';
+console.log("src",dest);
+console.log("result",result);
+console.log("result=dest",result==dest);
+
+// 可计算属性
+const nameKey='name';
+const ageKey='age';
+const jobKey='job';
+let uniqueToken=0;
+function getUniqueKey(key){
+    return `${key}_${uniqueToken++}`;
+}
+let person={
+    [getUniqueKey(nameKey)]:'Matt',
+    [getUniqueKey(ageKey)]:25,
+    [getUniqueKey(jobKey)]:'softWare Enginner'
+}
+console.log("person",person);
+
+对象解构赋值
+let person={
+    name:'Matt',
+    age:27
+}
+let {name:userName,age:userAge}=person;
+let {name,age}=person;
+console.log("userName",userName);
+console.log("userAge",userAge);
+console.log("name",name);
+console.log("age",age);
+
+// 嵌套解构:基础数据类型，复杂数据类型
+let person={
+    name:'Matt',
+    age:23,
+    job:{
+        title:'Software enginner'
+    }
+}
+let personCopy={};
+({name:personCopy.name,age:personCopy.age,job:personCopy.job}=person);
+personCopy.job.title="new title";
+console.log("person.job",person.job);//new title
+console.log("personCopy.job",personCopy.job);//new title
+personCopy.name='new Name';
+console.log("person.name",person.name);//Matt
+console.log("personCopy.name",personCopy.name);//new Name
+
+// 参数上下文匹配
+let person={
+    name:'Matt',
+    age:27
+};
+
+function printPerson(foo,{name,age},bar){
+    console.log("arguments",arguments);
+    console.log("name",name);
+    console.log("age",age);
+}
+printPerson('list',person,'2nd');
+
+this.$watch(
+    ()=>this.a+this.b,
+    //当this.a和this.b的值发生改变时，触发监听函数
+    (newVal,lodVal)=>{
+
+    }
+    )
+    // this.$watch返回一个取消监听函数，用来停止触发回调
+const unwatch=this.$watch('a',fn);
+unwatch();
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+export default defineConfig({
+    // 要用到的插件数组
+      plugins: [vue()],
+      // 开发或生产环境服务的公共基础路径,可以是/foo/、https://foo.com/、空字符串或./(用于开发环境) 几种类型，这个选项也可以通过命令行参数指定（例：vite build --base=/my/public/path/）
+      base: './',
+      // 静态资源服务的文件夹, 默认"public"
+      publicDir: 'public',
+      css: {
+          postcss: {
+              plugins: [
+                  require('autoprefixer')
+              ]
+          }
+      },
+      server: {
+          // 服务器主机名，如果允许外部访问，可设置为"0.0.0.0"
+          host: '0.0.0.0',
+          // 服务器端口号
+          port: 3000,
+          // boolean | string 启动项目时自动在浏览器打开应用程序；如果为string，比如"/index.html"，会打开http://localhost:3000/index.html
+          open: false,
+          // 自定义代理规则
+          proxy: {
+              '/api': {
+                  target: 'http://jsonplaceholder.typicode.com',
+                  changeOrigin: true,
+                  rewrite: (path) => path.replace(/^\/api/, '')
+              }
+          }
+      },
+      build: {
+          // 指定输出路径，默认'dist'
+          outDir: 'dist',
+          // 指定生成静态资源的存放路径(相对于build.outDir)
+          assetsDir: 'assets',
+          // 小于此阈值的导入或引用资源将内联为base64编码，设置为0可禁用此项。默认4096（4kb）
+          assetsInlineLimit: '4096',
+          // 启用/禁用CSS代码拆分，如果禁用，整个项目的所有CSS将被提取到一个CSS文件中,默认true
+          cssCodeSplit: true,
+          // 构建后是否生成source map文件，默认false
+          sourcemap: false,
+          // 为true时，会生成manifest.json文件，用于后端集成
+          manifest: false
+      }
+})
+</script>
+<style>
+
+</style>
