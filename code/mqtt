@@ -1,0 +1,47 @@
+vue3中mqtt封装代码：
+import {MQTT_USERNAME, MQTT_PASSWORD,MQTT_topic} from './config'
+import {ref} from 'vue';
+import { tryOnUnmounted } from '@vueuse/core';
+import Stomp from 'stompjs';
+
+function useMqtt(url) {
+    const data = ref(null);
+    const status = ref<string>('TOCONNECT');
+    const wsRef = ref<any>({});
+    const init=()=>{
+      if(!wsRef&&!(status.value == 'CONNECTING')){
+        const mqtt = Stomp.client(url);
+        mqtt.connect(MQTT_USERNAME, MQTT_PASSWORD, onMqttConnected,onMqttFailed);
+        wsRef.value= mqtt;
+        status.value = 'CONNECTING';
+      }else{
+        wsRef.value.disconnect(onMqttDisconnect);
+      }
+    };
+    const onMqttDisconnect=()=>{
+      console.log("mqtt连接关闭:");
+      status.value = 'CLOSED';
+    };
+    const onMqttConnected=()=>{
+      status.value='CONNECTED';
+      wsRef.value.subscribe(MQTT_topic + data.value, mqttResponseCallback,onMqttFailed);
+    };
+    const onMqttFailed=(msg)=>{
+      console.log("mqtt连接失败:" + msg);
+    };
+    const mqttResponseCallback=(msg)=>{
+      console.log("mqtt连接成功:" + msg);
+    };
+    init();
+    tryOnUnmounted(()=>{
+      onMqttDisconnect
+    });
+  return {
+    data,
+    status,
+    onMqttDisconnect,
+    onMqttConnected,
+    mqttResponseCallback,
+  }
+}
+exports.useMqtt = useMqtt;
