@@ -49,7 +49,9 @@ ES6新增对象方法，包含ES5方法：
            正确姿势：首先深复制和浅复制只针对像Object,Array这样的复杂的对象。浅复制只复制一层对象的属性，而深复制则递归复制了所有层级。
 对象迭代:
       Object.values()和Object.entries()
-      
+      Object.values();//返回对象值得数组
+      Object.enteries();//返回键/值对的数组
+      //以上两个方法执行对象的浅复制
            
            
           
