@@ -94,6 +94,7 @@
                     console.log(typeof Person.prototype);//Object
                     console.log(Person.prototype);//Object
                     let person1=new Person();
+                    console.log(Person===Person.prototype.constructor);//true
                     // console.log(person1.Prototype)//undefined,
                     // 因为脚本中没有直接访问这个prototype特性的标准方式，但是浏览器提供了__proto__属性，通过这个属性可以访问到如下
                     //这句表达式可以使用isPrototypeOf()来确定，相面的表达式相当于Person.prototype.isPrototypeOf(person1);
