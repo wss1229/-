@@ -362,6 +362,7 @@ export default defineConfig({
             console.log(instance1.name);//Nicholas
             console.log(instance1.age);//12
      1.3组合继承：使用原型链继承原型上的方法和属性，通过盗用构造函数来继承实例属性。
+                  不足：效率问题，父类构造函数在整个过程中被调用了两次
                     function SuperType(name){
                       this.name=name;
                       this.colors=['red','blue','green'];
@@ -370,9 +371,10 @@ export default defineConfig({
                       console.log(this.name);
                     }
                     function SubType(name,age){
-                      SuperType.call(this,name);
+                      SuperType.call(this,name);//第二次调用父类构造函数
                       this.age=age;
                     }
+                    //第一次调用父类构造函数
                     SubType.prototype=new SuperType();//若这一行注释掉，SubType.prototype上就只有sayAge方法，而没有sayName的方法
                     SubType.prototype.sayAge=function(){
                       console.log(this.age);
@@ -380,7 +382,73 @@ export default defineConfig({
                     let instance1=new SubType('Nicholas',29);
                     instance1.colors.push("balck");
                     console.log(instance1);//age: 29 colors: (4) ['red', 'blue', 'green', 'balck']  name: "Nicholas"
-       1.4原型继承：
+      1.4原型继承：实际上Object对传入的对象进行了一次浅复制。在ES5中重新定义了Obejct.create()来实现原型继承。
+                    Obejct.create()这个方法接收两个参数，一个是新对象的原型对象，另一个是定义额外属性的对象
+                    function object(o){
+                      function F(){}
+                      F.prototype=o;
+                      return new F();
+                    }
+                    let person={
+                      name:'Nicholas',
+                      friends:['Shley','court','Van']
+                    }
+
+                    let anotherPerson=object(person);
+                    anotherPerson.name="another";
+                    anotherPerson.friends.push("another1");
+
+                    let yetAnotherPerson=object(person);
+                    yetAnotherPerson.name="yetAnoherPerson";
+                    yetAnotherPerson.friends.push("yetAnotherPerson1");
+                    console.log(yetAnotherPerson);
+                    console.log(anotherPerson);
+                    
+                    Object.create()代码示例
+                    let person={
+                      name:'Nichoal',
+                      friends:['Shley','Cort','Van']
+                    }
+
+                    let anotherPerson=Object.create(person,{
+                      name:{
+                        value:'Greg'
+                      }
+                    });
+                    console.log(anotherPerson.name);
+        1.5寄生式继承：创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。
+                        缺点：寄生式继承会导致函数难以复用
+                        function createAnother(original){
+                          let clone=object(original);//实现继承的函数object
+                          //以某种方式增强这个对象
+                          clone.sayHi=function(){
+                            console.log("Hi");
+                          };
+                          return clone;
+                        }
+        1.6寄生式组合继承：盗用构造函数继承属性，使用混合原型链继承方法。思路就是不通过调用父类构造函数给子类惯性复制，而是取得父类原型的一个副本，将这个副本赋值hi给子类原型
+                        function inheritProptotype(subType,superType){
+                          let prototype=object(superType.prototype);//创建父类的一个副本
+                          prototype.constructor=subType;//解决由于重写原型导致constructor丢失
+                          subType.prototype=prototype;//将新创建的对象复制给子类原型
+                        }
+
+                        function SuperType(name){
+                          this.name=name;
+                          this.color=["red","blue","green"];
+                        }
+                        SuperType.prototype.sayName=function(){
+                          console.log(this.name);
+                        }
+                        function SubType(name,age){
+                          SuperType.call(this,name);
+                          this.age=age;
+                        }
+                        inheritProptotype(SubType,SuperType);
+                        SubType.prototype.sayAge=function(){
+                          console.log(this.age);
+                        }
+                
             
             
             
