@@ -1,0 +1,31 @@
+1.1 vue初始化时发生了什么？
+    1、首先执行vue.prototype._init方法，这个方法里面首先处理组件配置项（针对子组件进行了子组件优化，基于构造函数上的配置对象创建vm.$options,
+       把配置对象上的各个属性都打平到这个新对象上，减少了运行时原型链上的查找；针对根组件，将全局配置项合并到根组件的局部配置上，首先解析配置项，
+       接下来将配置项标准化合并处理，其中如果有extends或者mixin的话再调用这个函数递归处理。）
+       1.1.2 组件选项合并发生的三个地方：
+              1、vue.component(compName,comp)合并的Vue内置的全局组件和用户自己注册的全局组件，最终会放在全局的components配置项上
+              2、{components:{xxx}}局部注册，执行编译器生成的render函数时，会合并全局配置项到组件局部配置项上
+              3、根组件，将全局配置项合并到根组件的components配置项上
+     2、initLifecycle(vm),各种组件关系属性的初始化，比如$parent,$root,$children
+     3、iniEvent(vm),初始化自定义事件，
+     4、initRender(vm),初始化插槽，获取this.$slots，定义this._c,即createElement方法，平时使用的 h 函数
+     5、callHook(vm,'beforeCreate')，执行beforeCreate声明周期函数
+     6、initInjections(vm)，初始化inject选项。1、得到{key:val}形式的配置对象。2、对解析结果做响应式处理
+     7、initState(vm),响应式原理的核心，处理props,methods,computed,data,watch等选项
+     8、initProvide(vm)，处理provide选项,将其挂在到vm._provide上
+        总结provide、inject实现原理：再使用上是先注入provide,再用inject去拉取值，但是实际上是子组件从组代组件上去寻找相应key值对应的provide值，找到了就把provide赋值给inject中对应的key的value
+     9、createHook(vm,'created)
+        所以从源码角度看，再beforeCreate周期内还拿不到数据，因为这个时候数据还没做初始化，初始化的只是一些组件关系属性，自定义事件，插槽
+     10、有el选项就自定执行$mount，没有el选项就要手动执行$mount
+ 1.2 vue的响应式原理
+     1、initPorps(),首先遍历props配置，通过defineReactive(props,key,value)对props数据做响应式处理，通过proxy(vm,'_props',key)代理this.propsKey到vue实例,
+         也就是我们平常写的通过this.props拿到数据，而这个代理的具体实现是通过Object.defineProperty()实现get和set的拦截
+     2、initMethods(),首先拿到methods进行判重，也就是methods中的key和props中的key不能重复，在这过程中props优先级是大于methods的，然后将methods中的配置赋值到vue实例上，
+        方便我们this.methodsKey的方式访问定义的方法
+     3、initData(),首先拿到data中的属性进行判重，也就是data中的属性不能和props以及methods中的属性重复，代理data中的属性到vue属性上，支持this.key的方式访问，然后进行响应式处理
+     4、initComputed(),computed是通过watcher来实现的，对每个computedKey实例化一个watcher;将computedKey代理到实例上，支持通过this.computedKey访问computed.key
+                       注意理解：computed缓存实现原理，通过设置dirty属性为false来控制。
+     5、initWatch(),实例化一个watcher实例，并返回一个unwatch
+        computed和watch有什么区别？
+            computed默认懒执行，且不可更改，但是watcher可配置
+            使用场景不同，computed里面都是一些同步操作，而watcher里面可以执行异步操作
