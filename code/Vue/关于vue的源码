@@ -29,3 +29,13 @@
         computed和watch有什么区别？
             computed默认懒执行，且不可更改，但是watcher可配置
             使用场景不同，computed里面都是一些同步操作，而watcher里面可以执行异步操作
+     6、总结：响应式核心是通过Object.definProperty拦截set和get函数实现的。其中源码中把数组和对象的情况分开讨论了，
+              对于数组，修改了可以改变数组自身的那七个方法的原型，然后拦截对这些方法的处理，在新增数据时由dep通知watcher进行更新；
+              删除数据时，也是由dep通知watcher更新
+              对于对象，遍历对象的所有属性，更改他们的setter和getter函数，如果值还是对象的话就递归为每个属性设置setter和getter
+              在访问数据时，由obj.key进行依赖手机，在dep中存储相关watcher;在设置数据时由dep通知相关watcher进行更新。
+1.2 vue在一部更新时发生了什么？
+    1、首先vue的更新都是由watcher中的setter中的dep.notify()更新的，notify中又遍历了当前dep中收集的所有watcher并执行了其中的watcher.update()
+    2、watcher.update()中分三种情况，当懒执行时，也就是computed时，会将dirty设为true,在组件更新后，响应式数据再次被更新时执行computed getter计算新值，第二种情况
+        当在watch选项中传递一个sync配置项时，直接执行this.run()走同步执行。第三种情况，将当前watcher放入wacther队列（queueWatcher）
+    3、
