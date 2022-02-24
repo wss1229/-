@@ -38,4 +38,6 @@
     1、首先vue的更新都是由watcher中的setter中的dep.notify()更新的，notify中又遍历了当前dep中收集的所有watcher并执行了其中的watcher.update()
     2、watcher.update()中分三种情况，当懒执行时，也就是computed时，会将dirty设为true,在组件更新后，响应式数据再次被更新时执行computed getter计算新值，第二种情况
         当在watch选项中传递一个sync配置项时，直接执行this.run()走同步执行。第三种情况，将当前watcher放入wacther队列（queueWatcher）
-    3、
+    3、通过nextTick方法将一个刷新watcher的方法（flushSchedulerQueue）放入一个全局的callbacks 数组中。同时由于nextTick中的flushSchedulerQueue有用户传入的情况，所以在外又封装了try catch层
+        如果此时浏览器的异步任务队列中没有一个叫 flushCallbacks 的函数，通过timerFunc，将flushCallbacks优先放入异步队列，而flushCallbacks则负责执行所有flushSchedulerQueue函数
+    4、flushSchedulerQueue函数负责刷新watcher队列，执行queue数组中的每一个run方法，从而进入更新阶段，例如执行组件更新哈NSHU
