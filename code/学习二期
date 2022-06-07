@@ -14,3 +14,11 @@ token存在cookie中的好处：因为cokie受同源策略的影响所以cookie�
  createPersistedState:实现数据存储，通常配合vuex使用。因为vuex有一个缺点就是在页面刷新之后数据会消失。
  本质还是web存储数据的那几种方式，默认的存储键名是"vuex",
  
+Peomise知识补充
+promise本质就是一个延迟回调函数，能够把异步操作最终的成功返回值或者失败原因和相应的处理程序关联起来；这个异步操作会返回一个promise。
+一个promise必然会处于三种状态之一：
+1.pending：初始状态，没有被兑现，也没有被拒绝
+2.fulfilled：操作完成
+3.rejected：操作失败
+then操作在什么时候会发生：不管是promise处于fulfilled还是rejected 状态下，then方法里面的相关处理程序都会被调用。
+同时如果promise在then里面处理程序被
