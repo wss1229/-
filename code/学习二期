@@ -146,3 +146,36 @@ call/bind/apply
 这三个都是为了改变函数运行时的上下文
 
 
+//手写防抖
+//防抖应用场景：适合输入框请求后台。思路：在规定时间后触发，如果在规定使劲按内出发就要重新计时，总是最后一次操作被触发
+//节流应用场景：适合无限列表，监听用户scroll事件。在规定时间内只触发一次
+function debounce(fn,delay){
+    let timer=null;
+    return function(args){
+        let context=this;
+        if(timer){
+            clearTimeout(timer);
+        }
+        timer=setTimeout(function(){
+            fn.call(context,args);
+        },delay);
+    }
+}
+//手写节流
+var throttle = function(func, delay) {
+    var timer = null;
+    return function() {
+        var context = this;
+        var args = arguments;
+        if (!timer) {
+            timer = setTimeout(function() {
+                func.apply(context, args);
+                timer = null;
+            }, delay);
+        }
+    }
+}
+
+
+
+
