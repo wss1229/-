@@ -197,6 +197,50 @@ typeOf(new Date)  // 'date'
 
 
 单例模式：是js设计模式中的一种，主要思路就是一个类只有一只实例，并且保证提供一个全局访问点。
+ES5实现单例模式
+var Singleton=function(name){
+    this.name=name;
+    this.instance=null;
+}
+Singleton.prototype.getName=function(){
+    console.log(this.name);
+}
+Singleton.getInstance=function(name){
+    if(!this.instance){
+        this.instance=new Singleton(name);
+    }
+    return this.instance;
+}
+let a=Singleton.getInstance('Matt');
+let b=Singleton.getInstance('Marry');
+
+
+ES6实现单例模式
+const single =  'single' // 这里使用symbol会好一点
+class A {
+    static getinstace () {
+        if (this[single]) { // 由于是静态函数，这里的this指的是A，并不是 new A() 产生的对象哦。
+            return this.single
+        }
+        return this[single] = new this() // 如果没有值就new 构造函数
+    }
+
+    constructor() {
+        const sourceClass = this.constructor // 获取构造函数对象
+        if (!sourceClass[single]) { // 判断对象上面是否已经有了单例
+            sourceClass[single] = this // 这里的this指的是已经构造好的对象，空对象，只是constructor指向A
+        }
+        return sourceClass[single] // 如果已经存在则直接返回
+    }
+}
+let test3=new A;
+let test4=new A;
+console.log(test3===test4);//true
+let test1=A.getinstace();
+let test2=A.getinstace();
+console.log(test1===test2);//true
+
+
 //es6中利用class实现类，包含：构造函数（constructor），实例方法，获取函数（get）,设置函数（set），静态方法
 //constructor里面的this指向类对象，并且constructor中定义的方法和属性是实例独享的，constructor构造函数是存在于实例上的
 //static中定义的函数是存在于类上的，static中的this指向类本身
