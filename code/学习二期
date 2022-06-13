@@ -183,6 +183,45 @@ var throttle = function(func, delay) {
 查找变量的方法：js查找变量首先会在函数执行上下文中查找，找不到就去调用上下文中查找，找不到就去全局上下文中继续查找，最后一直找不到就是undefined
 掘金地址：https://juejin.cn/post/6844904145372053511#heading-1
 
+typeof可以正确识别：Undefined,Boolean,Number,String,Symbol,Function等类型的数据，但是对于其他都会认为是obejct,
+所以对于Null，Date可以使用Obejct.prototype.toString
+function typeOf(obj) {
+    let res = Object.prototype.toString.call(obj).split(' ')[1]
+    res = res.substring(0, res.length - 1).toLowerCase()
+    return res
+    // return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase()
+}
+typeOf([])        // 'array'
+typeOf({})        // 'object'
+typeOf(new Date)  // 'date'
+
+
+单例模式：是js设计模式中的一种，主要思路就是一个类只有一只实例，并且保证提供一个全局访问点。
+//es6中利用class实现类，包含：构造函数（constructor），实例方法，获取函数（get）,设置函数（set），静态方法
+//constructor里面的this指向类对象，并且constructor中定义的方法和属性是实例独享的，constructor构造函数是存在于实例上的
+//static中定义的函数是存在于类上的，static中的this指向类本身
+class PersonName{
+    constructor(name){
+        console.log(arguments.length);
+        this.name=name||null;
+        this.locate=function(){
+            console.log(this);
+            console.log(typeOf(this));//object
+        }
+    }
+    locate(){
+        console.log(this);
+        console.log(typeOf(this));//object
+    }
+    static locate(){
+        console.log(this);
+        console.log(typeOf(this));//function
+    }
+}
+let p1=new PersonName;
+p1.locate();
+PersonName.locate();
+PersonName.prototype.locate();
 
 
 
