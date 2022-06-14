@@ -267,6 +267,28 @@ p1.locate();
 PersonName.locate();
 PersonName.prototype.locate();
 
+//数组去重:利用filter和indexof循环判断每一项在原数组中的位置与index是否相同
+function unique(array){
+    var res=array.filter((item,index,arr)=>{
+        return arr.indexOf(item)==index;
+    })
+    return res;
+}
+let res1=unique([1,3,2,4,3,5,3]);
+
+//flat数组扁平化:利用递归，递归结束条件：判断数组项是否是数组Array.isArray()
+function flat(array){
+    var result=[];
+    for(var i=0;i<array.length;i++){
+        if(Array.isArray(array[i])){
+            result=result.concat(flat(array[i]));
+        }else{
+            result.push(array[i]);
+        }
+    }
+    return result;
+}
+
 
 
 
