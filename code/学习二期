@@ -439,4 +439,21 @@ const subscriberC=eventBus.subscribe('eventX',(msg,num)=>{
 subscriberC.unSubscribe();
 eventBus.public('eventX',{msg:'这是一条发布信息'},23);
 
+函数柯里化：就是将传入多个参数的函数改写为传入单个参数的函数
+函数柯里化思路：利用递归思想，将传入函数的参数长度与柯里化调用次数对比作为递归结束条件
+function curry(fn){
+    let judge=(...args)=>{
+        if(fn.length==args.length) return fn(...args)
+        return (...arg)=>judge(...arg,...args);
+    }
+    return judge
+}
+function add(a, b, c) {
+    return a + b + c
+}
+add(1, 2, 3);
+let addCurry = curry(add);
+addCurry(1)(2)(3);
+
+
 
