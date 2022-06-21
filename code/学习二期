@@ -455,5 +455,7 @@ add(1, 2, 3);
 let addCurry = curry(add);
 addCurry(1)(2)(3);
 
+学习ts掘金地址:https://juejin.cn/post/7096265620445986823
+
 
 
