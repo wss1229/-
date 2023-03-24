@@ -1,0 +1,4 @@
+保存登录状态：js-cookie插件
+ji-cookie用于在客户端存储cookie，它提供了set,get等方法，而且还能设置过期时间。用法示例：
+Cookies.set('access_token', token, { expires: 30 });
+
