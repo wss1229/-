@@ -2,3 +2,51 @@
 ji-cookie用于在客户端存储cookie，它提供了set,get等方法，而且还能设置过期时间。用法示例：
 Cookies.set('access_token', token, { expires: 30 });
 
+路由懒加载：
+1.vue的实现方式：
+ component: () => import(/* webpackChunkName: "contact-set" */ '@/modules/contact-set/contact-set.vue')；
+ 上述代码中webpackChunkName以魔法注释的形式实现了打包后的代码块拆分
+ 
+2.react的是实现方式：
+实现思路：Suspense+lazy(()=>import(''))
+代码示例：
+  interface RouteConfig {
+    path:string;
+    component:React.ComponentType<any>;
+    exact?:boolean;
+  }
+  const routes:RouteConfig[]=[{
+    path:'/home',
+    component:lazy(()=>import('@/pages/Home'))
+  }]
+  const Outlet=({routes})=>(
+    <Suspense fallback={<div>loading...</div>}>
+      <Routes>
+        {routes.map((route,index)=>(
+          <Route key={index} path={route.path} element={<route.component/>}></Route>
+        ))}
+      </Routes>
+    </Suspense>
+  )
+  
+ 2.路由拦截
+ 考虑到登录与注册的特殊性，登录和注册页面需要做全局路由拦截
+ 思路：登录后通过浏览器左上角的返回按钮不能回到登录页面，直接到默认首页；未登录时用户不能访问其他路由
+ vue实现代码：
+ router.beforeEach(async (to, from, next) => {
+    const token = cookies.get('_access_token');
+    let auth = to.meta.requireAuth;
+    // 没有登录且需要权限的页面
+    if (!token && auth) {
+        window.open('/sign-in', '_self');
+    } else if (token && to.path == "/sign-in") {
+        // 已经登录了去注册页  直接去首页
+        window.open('/', '_self');
+    } else {
+        next()
+    }
+});
+react实现代码：
+umi中使用wrappers高阶组件
+
+3.
