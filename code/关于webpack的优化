@@ -1,0 +1,54 @@
+1.使图片资源优化：使用url-loader和file-loader,将小于指定大小的图片文件转换成dataURL，减少网络请求。
+  代码示例：
+   // 允许对内部的 webpack 配置进行更细粒度的修改。
+    chainWebpack: config => {
+        // 启用打包分析工具 BundleAnalyzer
+        config.when(process.env.NODE_ENV_BUNDLE_ANALYZE === 'true', config => {
+            config.plugin('BundleAnalyzerPlugin').use(BundleAnalyzerPlugin);
+        });
+
+        // 开启图片压缩
+        config.module
+            .rule('images')
+            .test(/\.(png|jpe?g|gif)(\?.*)?$/)
+            .use('url-loader')
+            .loader('url-loader')
+            .tap(options => {
+                options.limit = 10240;
+                return options;
+            })
+            .end()
+    },
+   2.lazyload插件实现大型图片的懒加载。
+   3.使用css-loader和style-loader将css文件转换为javascript模块，将样式插入HTML中
+   4.使用postcss-loader处理css代码，自动添加css前缀和压缩css代码，减少css文件的大小
+   5.使用babel-loader处理js代码，将ES6及以上版本的JavaScript代码转换为ES5代码，增加浏览器兼容性
+   6.通过tree shaking技术，剔除未使用的代码，减少JavaScript文件的大小
+   7.使用uglifyjs-webpack-plugin插件压缩JavaScript代码，进一步减少文件大小，此处vue使用terser-webpack-plugin
+   代码：
+   minimizer: [
+                    // js压缩插件
+                    new TerserPlugin({
+                        parallel: true,
+                        // sourceMap: true,
+                        terserOptions: {
+                            extractComments: false, // 注释剥离功能
+                            format: {
+                                comments: false // 删除所有注释
+                            },
+                            warnings: true,
+                            // parse: {},
+                            compress: {
+                                drop_console: true,
+                                drop_debugger: false
+                                // pure_funcs: ['console.log'] // 移除console
+                            }
+                        }
+                    })
+                ]
+  缓存方面的优化：
+  1.使用chunkhash实现静态资源缓存，在文件名中添加一个唯一的chunkhash,确保当文件内容变化时文件名也变化
+  2.manifest实现静态资源缓存，使用ManifestPlugin插件生成一个包含打包后的静态资源信息的manifest.json文件，并将该文件输出到指定目录。这个文件包含了每个chunk和对应文件的映射关系
+  3.使用Etag实现静态资源缓存
+  4.基于Service Worker实现离线缓存
+  
