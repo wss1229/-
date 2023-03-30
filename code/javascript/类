@@ -190,8 +190,31 @@
                    要弄清楚类的公有属性和私有属性首先就要知道：
                    1.public是可以被类的示例获取的
                    2.private只能在类中访问到
-                  下面我们就用代码来演示public属性：
-                  class my
+                     下面我们就用代码来演示public属性：
+                        const myObject = {
+                            name: "Parwinder",
+                            sayMyName: function () {
+                                return this.name;
+                            }
+                        }
+
+                        console.log(myObject.name); // Parwinder
+                        console.log(myObject.sayMyName()); // Parwinder
+                       class ObjectCreator {
+                            name;
+
+                            constructor(name) {
+                                this.name = name;
+                            }
+
+                            sayMyName() {
+                                return this.name;
+                            }
+                        }
+
+                        const myObject = new ObjectCreator("Parwinder");
+                        console.log(myObject.name); // Parwinder
+                        console.log(myObject.sayMyName()); // Parwinder
                   
                   
             
