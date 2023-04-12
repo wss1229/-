@@ -49,4 +49,21 @@ Cookies.set('access_token', token, { expires: 30 });
 react实现代码：
 umi中使用wrappers高阶组件
 
-3.
+3.保持登录状态实现
+  保持登录状态的需求：当勾选后---同一个浏览器不同页签之间不需要登录即可跳转至登陆后的页面---关闭浏览器后重新打开依旧可以跳转至登录成功后的页面
+                    退出登录后---默认不勾选保持登陆状态的选项
+                    当不勾选---同一个不同页签之间不需要登录即可跳转至登陆后的页面---关闭浏览器后重新打开不能跳转至登录成功后的页面
+  实现思路：从cookie和token入手，将后台返回的token使用js-cookie插件持久化的存储于客户端的cookie中，再通过设置cookie的会话级别来实现。
+  代码：
+     //判断是否勾选记住登录状态
+     if (values.is_remember) {
+       Cookies.set('access_token', token, { expires: 30 });
+     } else {
+       // 若勾选了记住登录状态，将cookie设置为会话级别 session（默认不设置expires的话就是会话级别的cookie）
+       Cookies.set('access_token', token);
+     }
+  cookie,sessionStorage,localStorage存储的区别：
+    1.cookie是服务器发送到用户浏览器并保存在本地的一小块数据；(详情参见：https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies)
+      cookie的生命周期有两种情况：1.会话期 Cookie 会在当前的会话结束之后删除。2.持久性 Cookie 在过期时间（Expires）指定的日期或有效期（Max-Age）指定的一段时间后被删除。
+    2.sessionStorage
+      sessionStorage的声明周期有多种情况：1.打开多个相同的 URL 的 Tabs 页面，会创建各自的 sessionStorage。2.关闭对应浏览器标签或窗口，会清除对应的 sessionStorage
