@@ -215,6 +215,10 @@
                         const myObject = new ObjectCreator("Parwinder");
                         console.log(myObject.name); // Parwinder
                         console.log(myObject.sayMyName()); // Parwinder
+                        
+ 2.javascript的设计模式之原型模式
+   原型模式不仅是一种设计模式，还是一种编程范式。是javascript面向对象编程实现的根基。
+   原型编程范式的核心思想就是利用实例来描述对象，用实例作为定义对象和继承的基础。在 JavaScript 中，原型编程范式的体现就是基于原型链的继承。
                   
                   
             
