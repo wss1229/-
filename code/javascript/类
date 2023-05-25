@@ -4,7 +4,7 @@
             类构造函数的new,在调用类构造函数时不适用new会抛出错误；而在使用普通构造函数时不加new的话this就默认指向全局window
             class Person {
               constructor(){
-                this.foo='foo';//这里的this指向实例
+                this.foo='foo';//这里的this指向实例,因为在new一个实例的时候就调用了这个构造函数，所以此处构造函数的this指向实例
               }
             }
             let p1=new Person();
