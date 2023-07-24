@@ -1,0 +1,2 @@
+1.1 react的事件处理机制
+    react有自己的事件处理机制，不同于javascript的原生事件机制，react的事件处理机制是绑定在document上的而JavaScript的原生事件是绑定在dom节点上的。
